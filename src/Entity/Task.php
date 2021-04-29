@@ -5,9 +5,21 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\TaskRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *  normalizationContext={"groups"={"Task:get"}},
+ *     itemOperations={
+ *      "get",
+ *      "delete",
+ *      "patch" = {"groups"={"Task:patch"}}
+ *  },
+ *     collectionOperations={"get",
+ *     "post" = {"groups"={"Task:post"}}
+ *  }
+ * )
+ * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity(repositoryClass=TaskRepository::class)
  */
 class Task
@@ -21,28 +33,40 @@ class Task
 
     /**
      * @ORM\Column(type="string", length=100)
+     * @Groups({"Task:get", "Task:patch", "Task:post"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"Task:get", "Task:patch", "Task:post"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"Task:get"})
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"Task:get", "Task:patch"})
      */
     private $completedAt;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups({"Task:get", "Task:patch"})
      */
     private $completed;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+        $this->completedAt = null;
+        $this->completed = false;
+    }
 
     public function getId(): ?int
     {
@@ -76,13 +100,6 @@ class Task
     public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
     }
 
     public function getCompletedAt(): ?\DateTimeInterface
