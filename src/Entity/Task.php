@@ -19,7 +19,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *     "post" = {"groups"={"Task:post"}}
  *  }
  * )
- * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity(repositoryClass=TaskRepository::class)
  */
 class Task
@@ -107,13 +106,6 @@ class Task
         return $this->completedAt;
     }
 
-    public function setCompletedAt(?\DateTimeInterface $completedAt): self
-    {
-        $this->completedAt = $completedAt;
-
-        return $this;
-    }
-
     public function getCompleted(): ?bool
     {
         return $this->completed;
@@ -121,7 +113,16 @@ class Task
 
     public function setCompleted(bool $completed): self
     {
-        $this->completed = $completed;
+        if($completed == true && $this->completed == false){
+            $this->completed = true;
+            $this->completedAt = new \DateTime();
+        } else if ($completed == false && $this->completed == true){
+            $this->completed = false;
+            $this->completedAt = null;
+        } else {
+            $errorMessage = $this->completed ? "completed" : "uncompleted";
+            throw new \Exception("The task is already marked as " . $errorMessage);
+        }
 
         return $this;
     }
