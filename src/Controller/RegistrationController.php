@@ -59,6 +59,9 @@ class RegistrationController extends AbstractController
         $user = new User();
         $user->setUsername($username);
         $user->setPassword($this->passwordEncoder->encodePassword($user, $password));
+        $user->setRoles([
+            'ROLE_USER'
+        ]);
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
