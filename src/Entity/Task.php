@@ -10,14 +10,16 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * @ApiResource(
  *  attributes={"security" = "is_granted('ROLE_USER')"},
- *  normalizationContext={"groups"={"Task:get"}},
- *     itemOperations={
+ *  normalizationContext={"groups"={"Task:read"}},
+ *  denormalizationContext={"groups"={"Task:write"}},
+ *  itemOperations={
  *      "get"={"security"="object.getUser() == user"},
  *      "delete"={"security"="object.getUser() == user"},
  *      "patch" = {"groups"={"Task:patch"}, "security"="object.getUser() == user"}
  *  },
- *     collectionOperations={"get",
- *     "post" = {"groups"={"Task:post"}}
+ *  collectionOperations={
+ *     "get",
+ *     "post"
  *  },
  * )
  * @ORM\Entity(repositoryClass=TaskRepository::class)
@@ -28,36 +30,37 @@ class Task
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"Task:read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=100)
-     * @Groups({"Task:get", "Task:patch", "Task:post"})
+     * @Groups({"Task:read", "Task:write"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"Task:get", "Task:patch", "Task:post"})
+     * @Groups({"Task:read", "Task:write"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Groups({"Task:get"})
+     * @Groups({"Task:read"})
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Groups({"Task:get", "Task:patch"})
+     * @Groups({"Task:read", "Task:patch"})
      */
     private $completedAt;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"Task:get", "Task:patch"})
+     * @Groups({"Task:read", "Task:patch"})
      */
     private $completed;
 
