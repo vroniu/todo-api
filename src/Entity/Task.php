@@ -9,13 +9,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource(
+ *  attributes={"security" = "is_granted('ROLE_USER')"},
  *  normalizationContext={"groups"={"Task:get"}},
  *     itemOperations={
  *      "get"={"security"="object.getUser() == user"},
- *      "delete",
- *      "patch" = {"groups"={"Task:patch"}}
+ *      "delete"={"security"="object.getUser() == user"},
+ *      "patch" = {"groups"={"Task:patch"}, "security"="object.getUser() == user"}
  *  },
- *     collectionOperations={"get"={"security"="object.user == user"},
+ *     collectionOperations={"get",
  *     "post" = {"groups"={"Task:post"}}
  *  },
  * )
