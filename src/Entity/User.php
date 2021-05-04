@@ -3,11 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @ORM\Entity(repositoryClass="App\Repository\UserRepository", repositoryClass=UserRepository::class)
  * @ORM\Table(name="`user`")
  */
 class User implements UserInterface
@@ -34,6 +35,55 @@ class User implements UserInterface
      * @ORM\Column(type="string")
      */
     private $password;
+
+    /**
+     * @var ArrayCollection
+     * @ORM\OneToMany(targetEntity="App\Entity\Task", mappedBy="user")
+     */
+    private $tasks;
+
+    /**
+     * User constructor.
+     * @param ArrayCollection $tasks
+     */
+    public function __construct()
+    {
+        $this->tasks = new ArrayCollection();
+    }
+
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getTasks(): ArrayCollection
+    {
+        return $this->tasks;
+    }
+
+    /**
+     * @param Task $task
+     * @return User
+     */
+    public function addTask(Task $task): self
+    {
+        $this->tasks->add($task);
+
+        return $this;
+    }
+
+    public function removeTask(Task $task): self
+    {
+        if($this->tasks->contains($task)){
+            $this->tasks->removeElement($task);
+
+            //Remove ownership
+            if($task->getUser() === $this){
+                $task->setUser(null);
+            }
+        }
+
+        return $this;
+    }
 
     public function getId(): ?int
     {

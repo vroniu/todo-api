@@ -11,13 +11,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ApiResource(
  *  normalizationContext={"groups"={"Task:get"}},
  *     itemOperations={
- *      "get",
+ *      "get"={"security"="object.getUser() == user"},
  *      "delete",
  *      "patch" = {"groups"={"Task:patch"}}
  *  },
- *     collectionOperations={"get",
+ *     collectionOperations={"get"={"security"="object.user == user"},
  *     "post" = {"groups"={"Task:post"}}
- *  }
+ *  },
  * )
  * @ORM\Entity(repositoryClass=TaskRepository::class)
  */
@@ -59,6 +59,27 @@ class Task
      * @Groups({"Task:get", "Task:patch"})
      */
     private $completed;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="tasks")
+     */
+    private $user;
+
+    /**
+     * @return User
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param User $user
+     */
+    public function setUser(User $user): void
+    {
+        $this->user = $user;
+    }
 
     public function __construct()
     {
