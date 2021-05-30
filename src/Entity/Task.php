@@ -60,7 +60,7 @@ class Task
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"Task:read", "Task:patch"})
+     * @Groups({"Task:read", "Task:patch", "Task:write"})
      */
     private $completed;
 
