@@ -4,3 +4,9 @@
 
 login:
     path: /login
+    methods: POST
+
+register:
+    path: /register
+    methods: POST
+    controller: App\Controller\RegistrationController::index

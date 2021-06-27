@@ -45,8 +45,9 @@ class RegistrationController extends AbstractController
      */
     public function index(Request $request): Response
     {
-        $username = $request->get('username');
-        $password = $request->get('password');
+        $parameters = json_decode($request->getContent(), true);
+        $username = $parameters['username'];
+        $password = $parameters['password'];
 
         $user = $this->userRepository->findBy([
             'username' => $username
